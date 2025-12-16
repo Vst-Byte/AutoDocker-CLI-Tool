@@ -1,0 +1,34 @@
+name: Node.js CI # Nome da Pipeline
+
+on:
+  push:
+    branches: [ "main" ] # Roda sempre que houver push na main
+  pull_request:
+    branches: [ "main" ] # Roda se alguém abrir um PR
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # O computador virtual que o GitHub vai emprestar (Linux)
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x] # Testar em várias versões do Node ao mesmo tempo!
+
+    steps:
+    - name: Baixar o código (Checkout)
+      uses: actions/checkout@v3
+
+    - name: Instalar o Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Instalar Dependências (Clean Install)
+      # 'npm ci' é mais seguro que 'npm install' para CI, pois segue estritamente o package-lock.json
+      run: npm ci
+
+    - name: Verificar se o script roda (Smoke Test)
+      # Como seu script é interativo, não podemos rodar ele todo.
+      # Vamos apenas checar se ele inicia sem erros de sintaxe.
+      run: node -c index.js
