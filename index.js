@@ -24,6 +24,20 @@ const questions = [
     choices: ['3.8', '3.9', '3.11'],
     when: (answers) => answers.tech === 'Python'
   },
+{
+    type: 'list',
+    name: 'version',
+    message: '📦 Qual versão da imagem base?',
+    choices: ['1.21', '1.20', '1.19'],
+    when: (answers) => answers.tech === 'Go (Golang)'
+},
+{
+    type: 'list',
+    name: 'version',
+    message: '📦 Qual versão do Java (JDK)?',
+    choices: ['11', '17', '21'], 
+    when: (answers) => answers.tech === 'Java'
+},
   {
     type: 'confirm',
     name: 'compose',
@@ -42,7 +56,7 @@ const questions = [
 inquirer.prompt(questions).then(answers => {
   // 1. Gera o Dockerfile (Lógica antiga mantida)
   let dockerContent = '';
-  if (answers.tech === 'Node.js') {
+if (answers.tech === 'Node.js') {
     dockerContent = `
 FROM node:${answers.version}-alpine
 WORKDIR /app
@@ -51,7 +65,8 @@ RUN npm ci --only=production
 COPY . .
 EXPOSE 3000
 CMD ["node", "index.js"]`;
-  } else {
+  }
+  else if (answers.tech === 'Python') {
     dockerContent = `
 FROM python:${answers.version}-slim
 WORKDIR /app
@@ -59,6 +74,27 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 CMD ["python", "app.py"]`;
+  }
+  else if (answers.tech === 'Go (Golang)') {
+    dockerContent = `
+FROM golang:${answers.version}-alpine
+WORKDIR /app
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod download
+COPY . .
+RUN go build -o main .
+EXPOSE 8080
+CMD ["./main"]`;
+  }
+  else if (answers.tech === 'Java') {
+    dockerContent = `
+FROM eclipse-temurin:${answers.version}-jdk-alpine
+WORKDIR /app
+COPY . .
+RUN javac Main.java
+EXPOSE 8080
+CMD ["java", "Main"]`;
   }
 
   fs.writeFileSync('Dockerfile', dockerContent.trim());
@@ -79,7 +115,7 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - "8080:8080"
     environment:
       - DB_HOST=db
   db:
