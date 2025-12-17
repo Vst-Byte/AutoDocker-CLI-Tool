@@ -104,7 +104,7 @@ Melhorias planejadas para as próximas versões:
 
 [ ] Integração CI/CD: Opção para gerar um arquivo básico de pipeline do GitHub Actions.
 
-[ ] Novas Linguagens: Adicionar suporte para Go e Java.
+[X] Novas Linguagens: Adicionar suporte para Go e Java.
 
 
 
