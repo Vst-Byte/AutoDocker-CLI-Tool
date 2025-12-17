@@ -32,3 +32,13 @@ jobs:
       # Como seu script é interativo, não podemos rodar ele todo.
       # Vamos apenas checar se ele inicia sem erros de sintaxe.
       run: node -c index.js
+
+- name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs' # Escaneia o sistema de arquivos (File System)
+        scan-ref: '.'
+        format: 'table'
+        exit-code: '1' # Quebra a pipeline se achar erro crítico
+        ignore-unfixed: true
+        severity: 'CRITICAL,HIGH'
