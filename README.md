@@ -100,7 +100,7 @@ Melhorias planejadas para as próximas versões:
 
 [ ] Auto-Build: Executar o comando docker build automaticamente após gerar o arquivo.
 
-[ ] Suporte a docker-compose: Gerar arquivo para subir banco de dados junto com a app.
+[X] Suporte a docker-compose: Gerar arquivo para subir banco de dados junto com a app.
 
 [ ] Integração CI/CD: Opção para gerar um arquivo básico de pipeline do GitHub Actions.
 
