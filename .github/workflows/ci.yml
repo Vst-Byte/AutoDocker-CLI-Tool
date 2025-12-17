@@ -1,18 +1,18 @@
-name: Node.js CI # Nome da Pipeline
+name: Node.js CI
 
 on:
   push:
-    branches: [ "main" ] # Roda sempre que houver push na main
+    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ] # Roda se alguém abrir um PR
+    branches: [ "main" ]
 
 jobs:
   build:
-    runs-on: ubuntu-latest # O computador virtual que o GitHub vai emprestar (Linux)
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x] # Testar em várias versões do Node ao mesmo tempo!
+        node-version: [14.x, 16.x, 18.x]
 
     steps:
     - name: Baixar o código (Checkout)
@@ -25,20 +25,18 @@ jobs:
         cache: 'npm'
 
     - name: Instalar Dependências (Clean Install)
-      # 'npm ci' é mais seguro que 'npm install' para CI, pois segue estritamente o package-lock.json
       run: npm ci
 
     - name: Verificar se o script roda (Smoke Test)
-      # Como seu script é interativo, não podemos rodar ele todo.
-      # Vamos apenas checar se ele inicia sem erros de sintaxe.
       run: node -c index.js
 
-- name: Run Trivy vulnerability scanner
+    - name: Segurança - Scan de Vulnerabilidades (Trivy)
       uses: aquasecurity/trivy-action@master
       with:
-        scan-type: 'fs' # Escaneia o sistema de arquivos (File System)
+        scan-type: 'fs'
         scan-ref: '.'
         format: 'table'
-        exit-code: '1' # Quebra a pipeline se achar erro crítico
+        exit-code: '1'
         ignore-unfixed: true
         severity: 'CRITICAL,HIGH'
+
