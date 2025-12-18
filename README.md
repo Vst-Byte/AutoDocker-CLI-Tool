@@ -102,7 +102,7 @@ Melhorias planejadas para as próximas versões:
 
 - [X] Suporte a docker-compose: Gerar arquivo para subir banco de dados junto com a app.
 
-- [ ] Integração CI/CD: Opção para gerar um arquivo básico de pipeline do GitHub Actions.
+- [x] Integração CI/CD: Opção para gerar um arquivo básico de pipeline do GitHub Actions.
 
 - [X] Novas Linguagens: Adicionar suporte para Go e Java.
 
