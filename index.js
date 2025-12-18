@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
-const { execSync } = require('child_process'); 
+const { execSync } = require('child_process');
 
 console.log("🤖 BEM-VINDO AO AUTODOCKER (DevSecOps Edition)");
 
@@ -54,7 +54,14 @@ const questions = [
     choices: ['PostgreSQL', 'MySQL', 'MongoDB'],
     when: (answers) => answers.compose === true
   },
-  // --- AUTO-BUILD ---
+  // --- CI/CD (NOVIDADE AQUI!) ---
+  {
+    type: 'confirm',
+    name: 'cicd',
+    message: '⚙️ Deseja gerar uma pipeline de CI/CD (GitHub Actions)?',
+    default: true
+  },
+  // --- Auto-Build ---
   {
     type: 'confirm',
     name: 'autoBuild',
@@ -73,7 +80,7 @@ const questions = [
 inquirer.prompt(questions).then(answers => {
   let dockerContent = '';
 
-  // --- Lógica dos Templates ---
+  // 1. Gera o Dockerfile
   if (answers.tech === 'Node.js') {
     dockerContent = `
 FROM node:${answers.version}-alpine
@@ -112,11 +119,10 @@ EXPOSE 8080
 CMD ["java", "Main"]`;
   }
 
-  // Gera o Dockerfile
   fs.writeFileSync('Dockerfile', dockerContent.trim());
   console.log(`✅ Dockerfile gerado para ${answers.tech} com sucesso!`);
 
-  // --- Lógica do Docker Compose ---
+  // 2. Gera o docker-compose.yml
   if (answers.compose) {
     let dbImage = '', dbPort = '';
     if (answers.db === 'PostgreSQL') { dbImage = 'postgres:13-alpine'; dbPort = '5432:5432'; }
@@ -142,24 +148,56 @@ services:
     console.log(`✅ docker-compose.yml gerado com banco ${answers.db}!`);
   }
 
-  // --- Lógica do AUTO-BUILD ---
+  // 3. Gera o GitHub Actions (A MÁGICA NOVA)
+  if (answers.cicd) {
+    // Cria as pastas .github/workflows se elas não existirem
+    const dir = './.github/workflows';
+    if (!fs.existsSync(dir)){
+        fs.mkdirSync(dir, { recursive: true });
+    }
+
+    // O conteúdo do arquivo ci.yml
+    const ciContent = `
+name: CI Pipeline
+on: [push]
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v3
+      
+      - name: Setup Docker
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Build da Imagem
+        run: docker build . -t app-teste
+      
+      - name: Scan de Segurança (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'app-teste'
+          format: 'table'
+          exit-code: '0' # Não quebra o build por enquanto
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+`;
+    fs.writeFileSync(`${dir}/ci.yml`, ciContent.trim());
+    console.log(`✅ Pipeline de CI/CD gerada na pasta .github/workflows!`);
+  }
+
+  // 4. Auto-Build
   if (answers.autoBuild) {
-    console.log("\n🚀 Iniciando o Build... (Isso pode demorar uns segundos)");
-    
+    console.log("\n🚀 Iniciando o Build...");
     try {
       if (answers.compose) {
-        // Se tem compose, usa o comando do compose
-        console.log("⚙️  Rodando: docker-compose up -d --build");
         execSync('docker-compose up -d --build', { stdio: 'inherit' });
       } else {
-        // Se é só Dockerfile, usa o comando padrão
-        console.log(`⚙️  Rodando: docker build -t ${answers.imageName} .`);
         execSync(`docker build -t ${answers.imageName} .`, { stdio: 'inherit' });
       }
-      console.log("\n✨ SUCESSO! Seu container foi construído.");
+      console.log("\n✨ SUCESSO! Build finalizado.");
     } catch (error) {
-      console.log("\n❌ ERRO NO BUILD: Verifique se o Docker está aberto no seu PC.");
-      console.log("Dica: Tente rodar 'docker ps' no terminal para testar.");
+      console.log("\n❌ O Build falhou (Verifique se o Docker está rodando).");
     }
   }
 });
