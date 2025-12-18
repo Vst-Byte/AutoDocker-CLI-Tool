@@ -98,7 +98,7 @@ Exemplo de Saída no Terminal:
 ### 🗺 Próximos Passos (Roadmap)
 Melhorias planejadas para as próximas versões:
 
-- [ ] Auto-Build: Executar o comando docker build automaticamente após gerar o arquivo.
+- [X] Auto-Build: Executar o comando docker build automaticamente após gerar o arquivo.
 
 - [X] Suporte a docker-compose: Gerar arquivo para subir banco de dados junto com a app.
 
