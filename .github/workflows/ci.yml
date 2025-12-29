@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Node.js CI & Security
 
 on:
   push:
@@ -7,36 +7,44 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  test:
+    name: Build & Smoke Test
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x]
+        node-version: [18.x, 20.x] 
 
     steps:
-    - name: Baixar o código (Checkout)
+    - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Instalar o Node.js ${{ matrix.node-version }}
+    - name: Setup Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
 
-    - name: Instalar Dependências (Clean Install)
+    - name: Instalar Dependências
       run: npm ci
 
-    - name: Verificar se o script roda (Smoke Test)
+    - name: Smoke Test (Sintaxe)
       run: node -c index.js
 
-    - name: Segurança - Scan de Vulnerabilidades (Trivy)
-      uses: aquasecurity/trivy-action@master
-      with:
-        scan-type: 'fs'
-        scan-ref: '.'
-        format: 'table'
-        exit-code: '1'
-        ignore-unfixed: true
-        severity: 'CRITICAL,HIGH'
+  security:
+    name: Security Scan (Trivy)
+    runs-on: ubuntu-latest
+    needs: test 
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Scan de Vulnerabilidades (Trivy FS)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          exit-code: '1' 
+          severity: 'CRITICAL,HIGH'
 
