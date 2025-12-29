@@ -1,6 +1,6 @@
 # 🚀 AutoDocker CLI Tool
 
-![NodeJS](https://img.shields.io/badge/Node.js-v12%2B-green) ![License](https://img.shields.io/badge/license-MIT-blue) ![Status](https://img.shields.io/badge/status-MVP-orange)
+![NodeJS](https://img.shields.io/badge/Node.js-v12%2B-green) ![License](https://img.shields.io/badge/license-MIT-blue) ![Status](https://img.shields.io/badge/status-MVP-orange) [![Node.js CI & Security](https://github.com/Vst-Byte/AutoDocker-CLI-Tool/actions/workflows/ci.yml/badge.svg)](https://github.com/Vst-Byte/AutoDocker-CLI-Tool/actions/workflows/ci.yml).
 
 **AutoDocker** é uma ferramenta de linha de comando (CLI) interativa projetada para automatizar a geração de arquivos `Dockerfile` padronizados e seguros para projetos de desenvolvimento.
 
@@ -19,13 +19,13 @@ Construída com **Node.js**, esta ferramenta visa eliminar configurações manua
 - [Autor](#-autor)
 
 ---
-
 ## ✨ Funcionalidades
 
 * **Menu Interativo:** Interface amigável via terminal utilizando `Inquirer.js`.
 * **Suporte Multi-Linguagem:** Templates otimizados para:
     * 🟢 **Node.js** (Baseado em Alpine Linux)
     * 🐍 **Python** (Baseado em imagens Slim)
+* **Geração de Pipeline CI/CD:** Cria automaticamente fluxos de trabalho do GitHub Actions (`.github/workflows`) com scan de segurança integrado.
 * **Versionamento Dinâmico:** O usuário escolhe a versão da linguagem (ex: Node 18, 20 ou Python 3.9, 3.11).
 * **Prevenção de Conflitos:** Detecta se já existe um `Dockerfile` na pasta para evitar sobrescrita acidental.
 
