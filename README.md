@@ -16,7 +16,6 @@ Construída com **Node.js**, esta ferramenta visa eliminar configurações manua
 - [Como Usar](#-como-usar)
 - [Estrutura do Projeto](#-estrutura-do-projeto)
 - [Próximos Passos (Roadmap)](#-próximos-passos-roadmap)
-- [Autor](#-autor)
 
 ---
 ## ✨ Funcionalidades
@@ -48,6 +47,12 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 ```
+### 3. Automação Contínua & Segurança (CI/CD Ready)
+A ferramenta vai além do container: ela pergunta se você deseja gerar um pipeline de CI/CD.
+* **O que ela cria:** Um arquivo `.github/workflows/main.yml`.
+* **Segurança Integrada:** O pipeline gerado já vem configurado com o **Trivy** (Security Scanner).
+* **Guardrails:** Se o scan detectar vulnerabilidades críticas no container, o pipeline falha automaticamente (Exit Code 1), impedindo deploy de código inseguro.
+ -------------------------------------------------------------------------------------------
 ### 🛠 Pré-requisitos
 - Node.js: Versão 12 ou superior.
 
@@ -75,14 +80,18 @@ node index.js
 
 Exemplo de Saída no Terminal:
 
+Exemplo de Saída no Terminal:
+
 🤖 INICIANDO AUTODOCKER...
 ```bash
 ? 🚀 Para qual tecnologia vamos criar o Dockerfile? Node.js
 ? 📦 Qual versão da imagem base? 18
-? Posso gerar o arquivo agora? Yes
+? 🚀 Deseja gerar um pipeline de CI/CD com Scan de Segurança? Yes
+? Posso gerar os arquivos agora? Yes
 
 ✨ Dockerfile criado com sucesso!
-📝 Tipo: Node.js | Versão: 18 |
+✅ Pipeline de CI/CD gerado em .github/workflows/main.yml
+📝 Tipo: Node.js | Versão: 18 | Trivy: Ativado
 ```
 ------------------------------------------------------------
 ## 📂 Estrutura do Projeto
